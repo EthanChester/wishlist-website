@@ -1,13 +1,56 @@
 const express = require('express');
-const app = express();
 const cors = require('cors');
+const bodyParser = require("body-parser");
+const mongoose = require("mongoose");
+const session = require("express-session");
+const MongoDBStore = require("connect-mongodb-session")(session);
 
-app.use(cors())
+const User = require("./models/user");
+const authRoutes = require('./routes/auth');
+
+const MONGODB_URI = 
+    "mongodb+srv://arichester2:dIbez9y5eA2ZFGZG@cluster0.5rzgb.mongodb.net/wishlist?retryWrites=true&w=majority";
+
+const app = express();
+const store = new MongoDBStore({
+    uri: MONGODB_URI,
+    collection: "sessions",
+});
+
+app.use(cors());
+
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(express.json());
+app.use(
+    session({
+        secret: "temp secret",
+        resave: false,
+        saveUninitialized: false,
+        store: store,
+    })
+);
+
+app.use(authRoutes);
 
 app.get('/', (req, res) => {
     res.send('Hello from our server!')
 })
 
-app.listen(8080, () => {
-    console.log('server listening on port 8080')
-})
+mongoose
+    .connect(MONGODB_URI)
+    .then((result) => {
+        User.findOne().then((user) => {
+            if (!user) {
+                const user = new User({
+                    email: "ari@test.com",
+                    password: "asdasd",
+                    wishlists: [],
+                });
+                user.save();
+            }
+        });
+        app.listen(8080);
+    })
+    .catch((err) => {
+        console.log(err);
+    });

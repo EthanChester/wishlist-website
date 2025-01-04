@@ -1,23 +1,22 @@
 "use client";
 
 import axios from "axios";
-import Link from "next/link";
+import { loginObjectType } from "../types";
 import { useState } from "react";
-import { loginObjectType } from "@/app/types";
 
-const loginApiCall = (loginData: loginObjectType) => {
-    // TODO add encryption
+const createAccountApiCall = (loginObject: loginObjectType) => {
+    //TODO add encryption
     axios({
         method: "post",
-        url: "http://localhost:8080/login",
-        data: loginData,
+        url: "http://localhost:8080/create-account",
+        data: loginObject
     })
-    .then((response) => {
+    .then(response => {
         console.log(response);
     })
-    .catch((err) => {
+    .catch(err => {
         console.log(err);
-    });
+    })
 };
 
 export default function Page() {
@@ -26,7 +25,7 @@ export default function Page() {
 
     return (
         <div>
-            <h1>Login</h1>
+            <h1>Create Account</h1>
 
             <div>
                 <input
@@ -52,17 +51,14 @@ export default function Page() {
 
                 <button
                     onClick={() =>
-                        loginApiCall({
+                        createAccountApiCall({
                             email: emailValue,
                             password: passwordValue,
                         })
                     }
                 >
-                    Sign in
+                    Sign Up!
                 </button>
-                <p>
-                    Don't have an account? <Link href={"/signup"}>Sign up</Link>
-                </p>
             </div>
         </div>
     );
