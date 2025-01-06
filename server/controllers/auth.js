@@ -8,7 +8,9 @@ exports.postLogin = (req, res, next) => {
         req.session.isLoggedIn = true;
         req.session.user = user;
         req.session.save((err) => {
-            console.log(err);
+            // res.send(request.sessionID);
+            console.log("err", err);
+            console.log(req.session);
         });
     })
     .catch((err) => console.log(err));
